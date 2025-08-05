@@ -1,6 +1,4 @@
 
-version: '3.8'
-
 services:
   db:
     image: mysql:8.0
@@ -13,23 +11,22 @@ services:
       - "3309:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   app:
-    build: .
-    command: bash -c "rm -f tmp/pids/server.pid && ./bin/rails db:create db:migrate && ./bin/rails s -b 0.0.0.0"
+    build:
+      context: .
+      args:
+        RAILS_ENV: development
+        BUNDLE_WITHOUT: ""
+    command: ["./wait-for-it.sh", "db", "bash", "-c", "rm -f tmp/pids/server.pid && ./bin/rails db:create db:migrate && ./bin/rails s -b 0.0.0.0"]
     volumes:
       - .:/rails
       - gem-cache:/usr/local/bundle/gems
+      - ./wait-for-it.sh:/rails/wait-for-it.sh
     ports:
       - "3000:3000"
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     environment:
       - DATABASE_URL=mysql2://root:password@db/squares_and_circles_development
       - RAILS_ENV=development
@@ -49,16 +46,28 @@ services:
     ports:
       - "8080:8080"
     environment:
-      URL: /swagger.yml
+      URLS: "[ { url: '/api-docs/v1/swagger.yaml', name: 'API V1' } ]"
     volumes:
-      - ./swagger.yml:/usr/share/nginx/html/swagger.yml
+      - ./public/api-docs/v1/swagger.yaml:/usr/share/nginx/html/api-docs/v1/swagger.yaml
 
   swagger-gen:
-    build: .
-    command: bash -c "gem install rswag-cli && rswag-specs"
+    build:
+      context: .
+      args:
+        RAILS_ENV: development
+        BUNDLE_WITHOUT: ""
+    command: ["./wait-for-it.sh", "db", "bash", "-c", "bundle install && bundle exec rails g rspec:install && bundle exec rspec spec/requests && cp -r public/api-docs/* /swagger-docs"]
     volumes:
       - .:/rails
+      - swagger-docs:/swagger-docs
+      - ./wait-for-it.sh:/rails/wait-for-it.sh
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=mysql2://root:password@db/squares_and_circles_development
+      - RAILS_ENV=development
 
 volumes:
   mysql-data:
   gem-cache:
+  swagger-docs:

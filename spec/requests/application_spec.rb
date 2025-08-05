@@ -1,4 +1,4 @@
-require 'swagger_helper'
+require 'rails_helper'
 
 RSpec.describe 'Application', type: :request do
   path '/' do
