@@ -23,7 +23,7 @@ Para configurar e executar o projeto usando Docker, siga estas etapas:
     Este comando irá construir as imagens Docker, criar os contêineres e executá-los em modo desanexado.
 
 2.  **Acessar a Aplicação:**
-    A aplicação Rails estará acessível em `http://localhost:3000`.
+    A aplicação Rails estará acessível em `http://localhost`.
 
 3.  **Acessar a Interface do Swagger:**
     A documentação da API (Swagger UI) estará acessível em `http://localhost/swagger`.
