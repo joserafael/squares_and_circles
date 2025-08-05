@@ -1,0 +1,11 @@
+openapi: 3.0.0
+info:
+  title: Squares and Circles API
+  version: 1.0.0
+paths:
+  /:
+    get:
+      summary: Root path
+      responses:
+        '200':
+          description: Successful response
