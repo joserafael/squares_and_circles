@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
   root 'application#index'
-  resources :frames, only: [:create, :show] do
-    resources :circles, only: [:create]
+  resources :frames do
+    resources :circles
   end
 
-  resources :circles, only: [:update, :index]
+  resources :circles
 end
