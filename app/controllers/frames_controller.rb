@@ -2,8 +2,8 @@ class FramesController < ApplicationController
   before_action :set_frame, only: [ :show, :update, :destroy ]
 
   def index
-    @frames = Frame.all
-    render json: @frames
+    @frames = Frame.all.includes(:circles)
+    render json: @frames.to_json(include: :circles)
   end
 
   def show
