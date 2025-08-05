@@ -10,5 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 0) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_05_180501) do
+  create_table "circles", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.decimal "center_x", precision: 10
+    t.decimal "center_y", precision: 10
+    t.decimal "diameter", precision: 10
+    t.bigint "frame_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["frame_id"], name: "index_circles_on_frame_id"
+  end
+
+  create_table "frames", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.decimal "center_x", precision: 10
+    t.decimal "center_y", precision: 10
+    t.decimal "width", precision: 10
+    t.decimal "height", precision: 10
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_foreign_key "circles", "frames"
 end

@@ -56,10 +56,9 @@ services:
       args:
         RAILS_ENV: development
         BUNDLE_WITHOUT: ""
-    command: ["./wait-for-it.sh", "db", "bash", "-c", "bundle install && ./bin/rails db:create RAILS_ENV=test && ./bin/rails db:migrate RAILS_ENV=test && bundle exec rspec spec/requests && cp -r public/api-docs/* /swagger-docs"]
+    command: ["./wait-for-it.sh", "db", "bash", "-c", "bundle install && ./bin/rails db:create RAILS_ENV=test && ./bin/rails db:migrate RAILS_ENV=test && bundle exec rspec spec/requests"]
     volumes:
       - .:/rails
-      - swagger-docs:/swagger-docs
       - ./wait-for-it.sh:/rails/wait-for-it.sh
     depends_on:
       - db
@@ -70,4 +69,3 @@ services:
 volumes:
   mysql-data:
   gem-cache:
-  swagger-docs:
