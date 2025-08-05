@@ -1,4 +1,14 @@
 class CirclesController < ApplicationController
+  def index
+    @circles = Circle.search(params[:center_x], params[:center_y], params[:radius], params[:frame_id])
+    render json: @circles
+  end
+
+  def show
+    @circle = Circle.find(params[:id])
+    render json: @circle
+  end
+
   def create
     @frame = Frame.find(params[:frame_id])
     @circle = @frame.circles.new(circle_params)
@@ -20,10 +30,12 @@ class CirclesController < ApplicationController
     end
   end
 
-  def index
-    @circles = Circle.search(params[:center_x], params[:center_y], params[:radius], params[:frame_id])
-    render json: @circles
+  def destroy
+    @circle = Circle.find(params[:id])
+    @circle.destroy
+    render json: { message: "Circle deleted successfully" }, status: :ok
   end
+  
 
   private
 
