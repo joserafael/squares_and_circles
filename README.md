@@ -1,6 +1,5 @@
 # squares_and_circles
 
-## Português
 
 ### Introdução
 
