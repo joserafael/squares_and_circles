@@ -1,5 +1,5 @@
 class CirclesController < ApplicationController
-  before_action :set_circle, only: [:show, :update, :destroy]
+  before_action :set_circle, only: [ :show, :update, :destroy ]
 
   def index
     @circles = Circle.search(params[:center_x], params[:center_y], params[:radius], params[:frame_id])

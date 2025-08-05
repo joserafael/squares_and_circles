@@ -27,6 +27,6 @@ class Frame < ApplicationRecord
       (center_y + height / 2) > (other_frame.center_y - other_frame.height / 2)
     end
 
-    errors.add(:base, 'Frame cannot overlap with another frame')
+    errors.add(:base, "Frame cannot overlap with another frame")
   end
 end

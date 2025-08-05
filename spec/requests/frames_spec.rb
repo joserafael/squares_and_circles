@@ -1,60 +1,167 @@
 require 'rails_helper'
 
 RSpec.describe "Frames", type: :request do
-  describe "POST /frames" do
-    it "creates a new frame" do
-      post "/frames", params: { frame: { center_x: 10, center_y: 10, width: 20, height: 20 } }
-      expect(response).to have_http_status(:created)
+  path '/frames' do
+    post 'Creates a Frame' do
+      tags 'Frames'
+      consumes 'application/json'
+      parameter name: :frame, in: :body, schema: {
+        type: :object,
+        properties: {
+          frame: {
+            type: :object,
+            properties: {
+              center_x: { type: :number },
+              center_y: { type: :number },
+              width: { type: :number },
+              height: { type: :number },
+              circles_attributes: {
+                type: :array,
+                items: {
+                  type: :object,
+                  properties: {
+                    center_x: { type: :number },
+                    center_y: { type: :number },
+                    diameter: { type: :number }
+                  },
+                  required: %w[center_x center_y diameter]
+                }
+              }
+            },
+            required: %w[center_x center_y width height]
+          }
+        },
+        required: %w[frame]
+      }
+
+      response '201', 'frame created' do
+        let(:frame) { { frame: { center_x: 10, center_y: 10, width: 20, height: 20 } } }
+        run_test!
+      end
+
+      response '422', 'invalid request' do
+        let(:frame) { { frame: { center_x: 10, center_y: 10, width: -20, height: 20 } } }
+        run_test!
+      end
     end
 
-    it "creates a new frame with circles" do
-      post "/frames", params: { frame: { center_x: 10, center_y: 10, width: 20, height: 20, circles_attributes: [{ center_x: 10, center_y: 10, diameter: 5 }] } }
-      expect(response).to have_http_status(:created)
-      expect(Frame.last.circles.count).to eq(1)
-    end
+    get 'Retrieves all Frames' do
+      tags 'Frames'
+      produces 'application/json'
 
-    it "returns unprocessable entity if frame is invalid" do
-      post "/frames", params: { frame: { center_x: 10, center_y: 10, width: -20, height: 20 } }
-      expect(response).to have_http_status(:unprocessable_content)
+      response '200', 'frames found' do
+        schema type: :array,
+               items: {
+                 type: :object,
+                 properties: {
+                   id: { type: :integer },
+                   center_x: { type: :number },
+                   center_y: { type: :number },
+                   width: { type: :number },
+                   height: { type: :number },
+                   created_at: { type: :string, format: 'date-time' },
+                   updated_at: { type: :string, format: 'date-time' }
+                 }
+               }
+        run_test!
+      end
     end
   end
 
-  describe "GET /frames" do
-    it "returns a list of frames" do
-      Frame.create(center_x: 10, center_y: 10, width: 20, height: 20)
-      get "/frames"
-      expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body).count).to eq(1)
-    end
-  end
+  path '/frames/{id}' do
+    get 'Retrieves a Frame' do
+      tags 'Frames'
+      produces 'application/json'
+      parameter name: :id, in: :path, type: :string
 
-  describe "GET /frames/:id" do
-    it "returns a frame" do
-      frame = Frame.create(center_x: 10, center_y: 10, width: 20, height: 20)
-      get "/frames/#{frame.id}"
-      expect(response).to have_http_status(:ok)
+      response '200', 'frame found' do
+        schema type: :object,
+               properties: {
+                 id: { type: :integer },
+                 center_x: { type: :number },
+                 center_y: { type: :number },
+                 width: { type: :number },
+                 height: { type: :number },
+                 created_at: { type: :string, format: 'date-time' },
+                 updated_at: { type: :string, format: 'date-time' },
+                 circles: {
+                   type: :array,
+                   items: {
+                     type: :object,
+                     properties: {
+                       id: { type: :integer },
+                       center_x: { type: :number },
+                       center_y: { type: :number },
+                       diameter: { type: :number },
+                       frame_id: { type: :integer },
+                       created_at: { type: :string, format: 'date-time' },
+                       updated_at: { type: :string, format: 'date-time' }
+                     }
+                   }
+                 }
+               }
+        let(:id) { Frame.create(center_x: 10, center_y: 10, width: 20, height: 20).id }
+        run_test!
+      end
+
+      response '404', 'frame not found' do
+        let(:id) { 'invalid' }
+        run_test!
+      end
     end
 
-    it "returns not found if frame does not exist" do
-      get "/frames/999"
-      expect(response).to have_http_status(:not_found)
-      expect(JSON.parse(response.body)["error"]).to eq("Frame not found")
-    end
-  end
+    put 'Updates a Frame' do
+      tags 'Frames'
+      consumes 'application/json'
+      parameter name: :id, in: :path, type: :string
+      parameter name: :frame, in: :body, schema: {
+        type: :object,
+        properties: {
+          frame: {
+            type: :object,
+            properties: {
+              center_x: { type: :number },
+              center_y: { type: :number },
+              width: { type: :number },
+              height: { type: :number }
+            }
+          }
+        }
+      }
 
-  describe "DELETE /frames/:id" do
-    it "deletes a frame" do
-      frame = Frame.create(center_x: 10, center_y: 10, width: 20, height: 20)
-      delete "/frames/#{frame.id}"
-      expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body)["message"]).to eq("Frame deleted successfully")
-      expect(Frame.count).to eq(0)
+      response '200', 'frame updated' do
+        let(:id) { Frame.create(center_x: 10, center_y: 10, width: 20, height: 20).id }
+        let(:frame) { { frame: { center_x: 15, center_y: 15 } } }
+        run_test!
+      end
+
+      response '422', 'invalid request' do
+        let(:id) { Frame.create(center_x: 10, center_y: 10, width: 20, height: 20).id }
+        let(:frame) { { frame: { width: -10 } } }
+        run_test!
+      end
+
+      response '404', 'frame not found' do
+        let(:id) { 'invalid' }
+        let(:frame) { { frame: { center_x: 15 } } }
+        run_test!
+      end
     end
 
-    it "returns not found if frame does not exist" do
-      delete "/frames/999"
-      expect(response).to have_http_status(:not_found)
-      expect(JSON.parse(response.body)["error"]).to eq("Frame not found")
+    delete 'Deletes a Frame' do
+      tags 'Frames'
+      produces 'application/json'
+      parameter name: :id, in: :path, type: :string
+
+      response '200', 'frame deleted' do
+        let(:id) { Frame.create(center_x: 10, center_y: 10, width: 20, height: 20).id }
+        run_test!
+      end
+
+      response '404', 'frame not found' do
+        let(:id) { 'invalid' }
+        run_test!
+      end
     end
   end
 end

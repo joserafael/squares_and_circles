@@ -1,5 +1,5 @@
 class FramesController < ApplicationController
-  before_action :set_frame, only: [:show, :update, :destroy]
+  before_action :set_frame, only: [ :show, :update, :destroy ]
 
   def index
     @frames = Frame.all
@@ -42,6 +42,6 @@ class FramesController < ApplicationController
   end
 
   def frame_params
-    params.require(:frame).permit(:center_x, :center_y, :width, :height, circles_attributes: [:center_x, :center_y, :diameter])
+    params.require(:frame).permit(:center_x, :center_y, :width, :height, circles_attributes: [ :center_x, :center_y, :diameter ])
   end
 end
