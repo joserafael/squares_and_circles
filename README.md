@@ -23,7 +23,7 @@ Para configurar e executar o projeto usando Docker, siga estas etapas:
     Este comando irá construir as imagens Docker, criar os contêineres e executá-los em modo desanexado.
 
 2.  **Acessar a Aplicação:**
-    A aplicação Rails estará acessível em `http://localhost`.
+    A aplicação Rails estará acessível em `http://localhost:3000`.
 
 3.  **Acessar a Interface do Swagger:**
     A documentação da API (Swagger UI) estará acessível em `http://localhost/swagger`.
@@ -34,6 +34,17 @@ Para configurar e executar o projeto usando Docker, siga estas etapas:
     docker-compose run --rm swagger-gen bundle exec rake rswag:specs:swaggerize
     ```
 
+5.  **Rodar os Testes (RSpec):**
+    Para executar os testes da aplicação, utilize o seguinte comando:
+    ```bash
+    RAILS_ENV=test docker-compose run --rm app ./wait-for-it.sh db bundle exec rspec
+    ```
+
+6.  **Acessar o Terminal do Contêiner da Aplicação:**
+    Para acessar o terminal do contêiner da aplicação (por exemplo, para executar comandos Rails como `rails console` ou `rails db:migrate` manualmente), utilize o seguinte comando:
+    ```bash
+    docker-compose exec app bash
+    ``` 
 ### Endpoints da API
 
 Os seguintes endpoints da API estão disponíveis:
