@@ -100,7 +100,7 @@ RSpec.describe "Frames", type: :request do
                    }
                  }
                }
-        let(:id) { Frame.create(center_x: 10, center_y: 10, width: 20, height: 20).id }
+        let(:id) { Frame.create!(center_x: 10, center_y: 10, width: 20, height: 20).id }
         run_test!
       end
 
@@ -130,13 +130,13 @@ RSpec.describe "Frames", type: :request do
       }
 
       response '200', 'frame updated' do
-        let(:id) { Frame.create(center_x: 10, center_y: 10, width: 20, height: 20).id }
+        let(:id) { Frame.create!(center_x: 10, center_y: 10, width: 20, height: 20).id }
         let(:frame) { { frame: { center_x: 15, center_y: 15 } } }
         run_test!
       end
 
       response '422', 'invalid request' do
-        let(:id) { Frame.create(center_x: 10, center_y: 10, width: 20, height: 20).id }
+        let(:id) { Frame.create!(center_x: 10, center_y: 10, width: 20, height: 20).id }
         let(:frame) { { frame: { width: -10 } } }
         run_test!
       end
@@ -144,7 +144,7 @@ RSpec.describe "Frames", type: :request do
       response '404', 'frame not found' do
         let(:id) { 'invalid' }
         let(:frame) { { frame: { center_x: 15 } } }
-        run_test!
+        run_test! { header 'Host', 'localhost' }
       end
     end
 
@@ -154,7 +154,7 @@ RSpec.describe "Frames", type: :request do
       parameter name: :id, in: :path, type: :string
 
       response '200', 'frame deleted' do
-        let(:id) { Frame.create(center_x: 10, center_y: 10, width: 20, height: 20).id }
+        let(:id) { Frame.create!(center_x: 10, center_y: 10, width: 20, height: 20).id }
         run_test!
       end
 

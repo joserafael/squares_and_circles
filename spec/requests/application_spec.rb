@@ -13,6 +13,7 @@ RSpec.describe 'Application', type: :request do
                }
 
         run_test! do |response|
+          header 'Host', 'localhost'
           data = JSON.parse(response.body)
           expect(data['message']).to eq('Hello, world!')
         end

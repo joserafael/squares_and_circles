@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Circles", type: :request do
-  let(:frame) { Frame.create(center_x: 10, center_y: 10, width: 20, height: 20) }
+  let(:frame) { Frame.create!(center_x: 10, center_y: 10, width: 20, height: 20) }
 
   path '/frames/{frame_id}/circles' do
     post 'Creates a Circle within a Frame' do
@@ -27,13 +27,13 @@ RSpec.describe "Circles", type: :request do
       response '201', 'circle created' do
         let(:frame_id) { frame.id }
         let(:circle) { { circle: { center_x: 10, center_y: 10, diameter: 5 } } }
-        run_test!
+        run_test! { header 'Host', 'localhost' }
       end
 
       response '422', 'invalid request' do
         let(:frame_id) { frame.id }
         let(:circle) { { circle: { center_x: 10, center_y: 10, diameter: 30 } } }
-        run_test!
+        run_test! { header 'Host', 'localhost' }
       end
     end
   end
@@ -65,7 +65,7 @@ RSpec.describe "Circles", type: :request do
         let(:center_y) { 10 }
         let(:radius) { 10 }
         before { frame.circles.create(center_x: 10, center_y: 10, diameter: 5) }
-        run_test!
+        run_test! { header 'Host', 'www.example.com' }
       end
     end
   end
@@ -92,19 +92,19 @@ RSpec.describe "Circles", type: :request do
       response '200', 'circle updated' do
         let(:id) { frame.circles.create(center_x: 10, center_y: 10, diameter: 5).id }
         let(:circle) { { circle: { center_x: 12, center_y: 12 } } }
-        run_test!
+        run_test! { header 'Host', 'www.example.com' }
       end
 
       response '422', 'invalid request' do
         let(:id) { frame.circles.create(center_x: 10, center_y: 10, diameter: 5).id }
         let(:circle) { { circle: { diameter: 30 } } }
-        run_test!
+        run_test! { header 'Host', 'www.example.com' }
       end
 
       response '404', 'circle not found' do
         let(:id) { 'invalid' }
         let(:circle) { { circle: { center_x: 12 } } }
-        run_test!
+        run_test! { header 'Host', 'www.example.com' }
       end
     end
 
@@ -115,12 +115,12 @@ RSpec.describe "Circles", type: :request do
 
       response '200', 'circle deleted' do
         let(:id) { frame.circles.create(center_x: 10, center_y: 10, diameter: 5).id }
-        run_test!
+        run_test! { header 'Host', 'www.example.com' }
       end
 
       response '404', 'circle not found' do
         let(:id) { 'invalid' }
-        run_test!
+        run_test! { header 'Host', 'www.example.com' }
       end
     end
   end
