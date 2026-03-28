@@ -27,9 +27,9 @@ development:
 test:
   <<: *default
   database: squares_and_circles_test
-  host: db
-  port: 3306
-  password: password
+  host: localhost
+  port: 3309
+  password:
   socket:
 
 # As with config/credentials.yml, you never want to store sensitive information,
