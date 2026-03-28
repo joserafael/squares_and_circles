@@ -142,9 +142,10 @@ RSpec.describe "Frames", type: :request do
       end
 
       response '404', 'frame not found' do
+        
         let(:id) { 'invalid' }
         let(:frame) { { frame: { center_x: 15 } } }
-        run_test! { header 'Host', 'localhost' }
+        run_test!
       end
     end
 
